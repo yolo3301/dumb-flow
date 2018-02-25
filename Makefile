@@ -12,7 +12,10 @@ OUTPUT_PATH := ./bin
 LDFLAGS := "-X $(REPOPATH)/version.version=$(VERSION)"
 
 # Build the project
-all: test vet build 
+all: dep test vet build 
+
+dep:
+	dep ensure
 
 test:
 	@echo "Test coming soon..."
