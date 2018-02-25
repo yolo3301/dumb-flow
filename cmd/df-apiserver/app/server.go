@@ -20,3 +20,8 @@ func NewDumbflowServer(eController *EventController, wfController *WorkflowContr
 func (s *DumbflowServer) HandleSanityTest(w http.ResponseWriter, r *http.Request) {
 	log.Print("Sanity checked")
 }
+
+func Run() {
+	// mapping http req to different handler
+	log.Print("Not Implement")
+}
