@@ -14,7 +14,14 @@ func NewInMemoryEventController() InMemoryEventController {
 	return InMemoryEventController{events: make(map[string][]model.Event)}
 }
 
-// TestEventController dumb.
-func (c InMemoryEventController) TestEventController() string {
-	return "ok"
+// SaveEvent not thread safe in this implementation
+func (c InMemoryEventController) SaveEvent(event model.Event) error {
+	key := event.GetPartitionKey()
+	c.events[key] = append(c.events[key], event)
+	return nil
+}
+
+// GetEvents from the map.
+func (c InMemoryEventController) GetEvents(key string) ([]model.Event, error) {
+	return c.events[key], nil
 }

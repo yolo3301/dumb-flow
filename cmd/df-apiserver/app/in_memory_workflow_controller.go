@@ -14,7 +14,11 @@ func NewInMemoryWorkflowController() InMemoryWorkflowController {
 	return InMemoryWorkflowController{workflows: make(map[string]model.Workflow)}
 }
 
-// TestWorkflowController just dumb.
-func (c InMemoryWorkflowController) TestWorkflowController() string {
-	return "ok"
+func (c InMemoryWorkflowController) SaveWorkflow(wf model.Workflow) error {
+	c.workflows[wf.Name] = wf
+	return nil
+}
+
+func (c InMemoryWorkflowController) GetWorkflow(name string) (model.Workflow, error) {
+	return c.workflows[name], nil
 }

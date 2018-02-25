@@ -1,8 +1,10 @@
 package app
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
@@ -22,11 +24,16 @@ func NewDumbflowServer(eController EventController, wfController WorkflowControl
 
 // Run starts the server.
 func (s *DumbflowServer) Run() {
+	addr := ":13301"
+	port := os.Getenv("DF_PORT")
+	if port != "" {
+		addr = fmt.Sprintf(":%v", port)
+	}
+
 	router := mux.NewRouter()
 	router.HandleFunc("/sanitycheck", s.HandleSanityTest).Methods("GET")
 
-	// TODO port move the env
-	log.Fatal(http.ListenAndServe(":13301", router))
+	log.Fatal(http.ListenAndServe(addr, router))
 }
 
 // HandleSanityTest handles sanity check requests.
