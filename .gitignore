@@ -1,3 +1,6 @@
+# Folder to ignore
+bin
+
 # Binaries for programs and plugins
 *.exe
 *.dll

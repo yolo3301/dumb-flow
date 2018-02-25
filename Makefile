@@ -21,8 +21,9 @@ vet:
 	@echo "Vet coming soon..."
 
 build:
-	@echo "Building " $(APISERVER_PATH)
-	@echo "Building " $(WORKER_PATH)
-	@echo "Building " $(DECIDER_PATH)
+	@echo "Building..."
+	go build -v -i -o $(OUTPUT_PATH)/df-server $(APISERVER_PATH)
+	go build -v -i -o $(OUTPUT_PATH)/df-worker $(WORKER_PATH)
+	go build -v -i -o $(OUTPUT_PATH)/df-decider $(DECIDER_PATH)
 
 .PHONY: test vet build 
