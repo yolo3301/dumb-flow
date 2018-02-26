@@ -9,9 +9,11 @@ import (
 type EventType string
 
 const (
-	start    EventType = "Start"
-	timeout  EventType = "Timeout"
-	complete EventType = "Complete"
+	WorkflowStartEvent    EventType = "WorkflowStart"
+	WorkflowCompleteEvent EventType = "WorkflowComplete"
+	WorkItemStartEvent    EventType = "WorkItemStart"
+	WorkItemTimeoutEvent  EventType = "WorkItemTimeout"
+	WorkItemCompleteEvent EventType = "WorkItemComplete"
 )
 
 // Event defines the model of a workflow event.
@@ -20,7 +22,8 @@ type Event struct {
 	WorkflowName   string
 	WorkflowExecID string
 	WorkItemName   string
-	EventType      EventType // work start / timeout / complete (immutable)
+	WorkItemExecID string
+	EventType      EventType
 	Payload        string
 	CreateTime     time.Time
 	CompleteTime   time.Time
@@ -28,11 +31,18 @@ type Event struct {
 
 // GetPartitionKey returns the partition key for an event.
 func (e *Event) GetPartitionKey() string {
-	// mapping to Kafka Topic
+	if e.WorkItemName == "" {
+		return fmt.Sprintf("%v-%v", e.WorkflowName, e.EventType)
+	}
+
 	return fmt.Sprintf("%v-%v-%v", e.WorkflowName, e.WorkItemName, e.EventType)
 }
 
 // GetUniqueKey returns a unique key for an event.
 func (e *Event) GetUniqueKey() string {
-	return fmt.Sprintf("%v-%v", e.WorkflowExecID, e.EventID)
+	if e.WorkItemExecID == "" {
+		return fmt.Sprintf("%v-%v", e.WorkflowExecID, e.EventID)
+	}
+
+	return fmt.Sprintf("%v-%v-%v", e.WorkflowExecID, e.WorkItemExecID, e.EventID)
 }
