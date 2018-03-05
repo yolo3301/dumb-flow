@@ -11,15 +11,13 @@ import (
 
 // DumbflowServer is the API server.
 type DumbflowServer struct {
-	eventController    EventController
-	workflowController WorkflowController
+	tableDAO TableDAO
+	queueDAO QueueDAO
 }
 
 // NewDumbflowServer creates a API server.
-func NewDumbflowServer(eController EventController, wfController WorkflowController) *DumbflowServer {
-	return &DumbflowServer{
-		eventController:    eController,
-		workflowController: wfController}
+func NewDumbflowServer(tableDAO TableDAO, queueDAO QueueDAO) *DumbflowServer {
+	return &DumbflowServer{tableDAO: tableDAO, queueDAO: queueDAO}
 }
 
 // Run starts the server.
