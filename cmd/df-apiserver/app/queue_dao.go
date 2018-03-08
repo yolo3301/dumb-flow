@@ -9,5 +9,5 @@ type QueueDAO interface {
 	EnqueueNotification(notifications []model.Notification) ([]model.Notification, error)
 	DequeueNotification(count int) ([]model.Notification, error)
 	EnqueueEvents(topic string, events []model.Event) ([]model.Event, error)
-	DequeueEvents(topic string, events []model.Event) ([]model.Event, error)
+	DequeueEvents(topic string, count int) ([]model.Event, error)
 }
