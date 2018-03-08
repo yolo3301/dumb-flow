@@ -16,4 +16,7 @@ type TableDAO interface {
 	GetEvents(workflowName string, workflowExecID string, allowedStates []model.EventState) ([]model.Event, error)
 	// Returns events successfully created/updated.
 	CreateOrUpdateEvents(workflowName string, workflowExecID string, events []model.Event) ([]model.Event, error)
+
+	// Test only, should remove later.
+	SanityCheck() (string, error)
 }

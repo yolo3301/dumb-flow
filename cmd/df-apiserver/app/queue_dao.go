@@ -10,4 +10,7 @@ type QueueDAO interface {
 	DequeueNotification(count int) ([]model.Notification, error)
 	EnqueueEvents(topic string, events []model.Event) ([]model.Event, error)
 	DequeueEvents(topic string, count int) ([]model.Event, error)
+
+	// Test only, remove later.
+	SanityCheck() (string, error)
 }

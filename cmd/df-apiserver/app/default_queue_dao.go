@@ -24,3 +24,7 @@ func (dao DefaultQueueDAO) EnqueueEvents(topic string, events []model.Event) ([]
 func (dao DefaultQueueDAO) DequeueEvents(topic string, count int) ([]model.Event, error) {
 	return nil, fmt.Errorf("Not implemented")
 }
+
+func (dao DefaultQueueDAO) SanityCheck() (string, error) {
+	return "", fmt.Errorf("Not implemented")
+}

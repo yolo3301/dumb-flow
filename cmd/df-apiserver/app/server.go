@@ -30,6 +30,7 @@ func (s *DumbflowServer) Run() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/sanitycheck", s.HandleSanityTest).Methods("GET")
+	router.HandleFunc("/tablesanitycheck", s.HandleTableSanityCheck).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(addr, router))
 }
@@ -37,4 +38,14 @@ func (s *DumbflowServer) Run() {
 // HandleSanityTest handles sanity check requests.
 func (s *DumbflowServer) HandleSanityTest(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Success!\n"))
+}
+
+func (s *DumbflowServer) HandleTableSanityCheck(w http.ResponseWriter, r *http.Request) {
+	res, err := s.tableDAO.SanityCheck()
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	w.Write([]byte(res))
 }
