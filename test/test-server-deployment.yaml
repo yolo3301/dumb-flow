@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: df-server
-        image: shou3301/df:t0.1
+        image: <YOUR DF IMAGE>
         ports:
         - containerPort: 13301

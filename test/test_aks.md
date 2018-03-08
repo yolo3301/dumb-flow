@@ -1,8 +1,9 @@
 Connect to the test cluster.
+Update `test-server-deployment.yaml` with your DF image. 
 
 ```
-kubectl create -f run-test-server.yaml
-kubectl create -f create-svc.yaml
+kubectl create -f test-server-deployment.yaml
+kubectl create -f test-server-svc.yaml
 ```
 
 There should already be a curl pod. If not, run
