@@ -1,0 +1,19 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: df-server-test
+spec:
+  selector:
+    matchLabels:
+      run: df-server-test
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: df-server-test
+    spec:
+      containers:
+      - name: df-server
+        image: shou3301/df:t0.1
+        ports:
+        - containerPort: 13301
