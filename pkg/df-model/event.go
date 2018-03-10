@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -25,13 +26,17 @@ const (
 
 // Event defines the model of a workflow event.
 type Event struct {
-	EventID          string
-	WorkflowName     string
-	WorkflowExecID   string
-	WorkItemName     string
-	WorkItemExecID   string
-	EventType        EventType
-	LastModifiedTime time.Time
-	State            EventState
-	Payload          string
+	ID               string     `json:"id,omitempty"`
+	WorkflowName     string     `json:"workflowName,omitempty"`
+	WorkflowExecID   string     `json:"workflowExecId,omitempty"`
+	WorkItemName     string     `json:"workItemName,omitempty"`
+	WorkItemExecID   string     `json:"workItemExecId,omitempty"`
+	EventType        EventType  `json:"eventTyep,omitempty"`
+	LastModifiedTime time.Time  `json:"lastModifiedTime,omitempty"`
+	State            EventState `json:"State,omitempty"`
+	Payload          string     `json:"payload,omitempty"`
+}
+
+func (e *Event) Key() string {
+	return fmt.Sprintf("%v-%v-%v-%v-%v", e.WorkflowName, e.WorkflowExecID, e.WorkItemName, e.WorkItemExecID, e.ID)
 }

@@ -9,7 +9,7 @@ type TableDAO interface {
 	CreateOrUpdateWorkflowDef(workflowDef *model.WorkflowDef) error
 	DeleteWorkflowDef(workflowName string) error
 	// Caller can give optional exec ID otherwise will be auto generated.
-	CreateWorkflowExec(workflowName string, workflowExecID string) (string, error)
+	CreateWorkflowExec(workflowName string) (string, error)
 	PauseWorkflowExec(workflowName string, workflowExecID string) error
 	AbortWorkflowExec(workflowName string, workflowExecID string) error
 	CompleteWorkflow(workflowName string, workflowExecID string) error

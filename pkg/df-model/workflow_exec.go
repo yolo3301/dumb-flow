@@ -1,5 +1,9 @@
 package model
 
+import (
+	"fmt"
+)
+
 type WorkflowState string
 
 const (
@@ -13,14 +17,23 @@ const (
 )
 
 type WorkflowExec struct {
-	ID            string
-	Name          string
-	State         WorkflowState
-	WorkItemExecs []WorkItemExec
+	ID           string        `json:"id,omitempty"`
+	WorkflowName string        `json:"workflowName,omitempty"`
+	State        WorkflowState `json:"state,omitempty"`
 }
 
 type WorkItemExec struct {
-	ID           string
-	WorkItemName string
-	State        string
+	ID             string `json:"id,omitempty"`
+	WorkflowName   string `json:"workflowName,omitempty"`
+	WorkflowExecID string `json:"workflowExecId,omitempty"`
+	WorkItemName   string `json:"workItemName,omitempty"`
+	State          string `json:"state,omitempty"`
+}
+
+func (exec *WorkflowExec) Key() string {
+	return fmt.Sprintf("%v-%v", exec.WorkflowName, exec.ID)
+}
+
+func (exec *WorkItemExec) Key() string {
+	return fmt.Sprintf("%v-%v-%v", exec.WorkflowName, exec.WorkflowExecID, exec.WorkItemName)
 }
