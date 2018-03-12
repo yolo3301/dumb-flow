@@ -4,6 +4,9 @@ import (
 	"fmt"
 )
 
+const WorkflowDefPrefix = "wfdef"
+const WorkItemDefPrefix = "widef"
+
 // Workflow defines the model of a workflow.
 type WorkflowDef struct {
 	Name    string            `json:"name,omitempty"`
@@ -17,9 +20,9 @@ type WorkItemDef struct {
 }
 
 func (def *WorkflowDef) Key() string {
-	return def.Name
+	return fmt.Sprintf("%v-%v", WorkflowDefPrefix, def.Name)
 }
 
 func (def *WorkItemDef) Key() string {
-	return fmt.Sprintf("%v-%v", def.WorkflowName, def.Name)
+	return fmt.Sprintf("%v-%v-%v", WorkItemDefPrefix, def.WorkflowName, def.Name)
 }

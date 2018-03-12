@@ -4,6 +4,9 @@ import (
 	"fmt"
 )
 
+const WorkflowExecPrefix = "wfexec"
+const WorkItemExecPrefix = "wiexec"
+
 type WorkflowState string
 
 const (
@@ -31,9 +34,9 @@ type WorkItemExec struct {
 }
 
 func (exec *WorkflowExec) Key() string {
-	return fmt.Sprintf("%v-%v", exec.WorkflowName, exec.ID)
+	return fmt.Sprintf("%v-%v-%v", WorkflowExecPrefix, exec.WorkflowName, exec.ID)
 }
 
 func (exec *WorkItemExec) Key() string {
-	return fmt.Sprintf("%v-%v-%v", exec.WorkflowName, exec.WorkflowExecID, exec.WorkItemName)
+	return fmt.Sprintf("%v-%v-%v-%v", WorkItemExecPrefix, exec.WorkflowName, exec.WorkflowExecID, exec.WorkItemName)
 }

@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const EventPrefix = "et"
+
 // EventType defines the type of current event ,this type will be assigned when event created
 type EventType string
 
@@ -38,5 +40,5 @@ type Event struct {
 }
 
 func (e *Event) Key() string {
-	return fmt.Sprintf("%v-%v-%v-%v-%v", e.WorkflowName, e.WorkflowExecID, e.WorkItemName, e.WorkItemExecID, e.ID)
+	return fmt.Sprintf("%v-%v-%v-%v-%v-%v", EventPrefix, e.WorkflowName, e.WorkflowExecID, e.WorkItemName, e.WorkItemExecID, e.ID)
 }
