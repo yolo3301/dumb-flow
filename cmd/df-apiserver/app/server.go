@@ -39,15 +39,15 @@ func (s *DumbflowServer) Run() {
 	wfDefSubrouter.HandleFunc("/", s.HandleGetWorkflowDef).Methods("GET")
 	wfDefSubrouter.HandleFunc("/", s.HandleDeleteWorkflowDef).Methods("DELETE")
 
-	wfExecSubrouter.HandleFunc("/workflowDef/{workflowName}/workflowExec", s.HandleCreateOrUpdateWorkflowExec).Methods("PUT")
-	wfExecSubrouter.HandleFunc("/{workflowExecID}", s.HandleGetWorkflowExec).Methods("GET")
+	wfExecSubrouter.HandleFunc("/", s.HandleCreateOrUpdateWorkflowExec).Methods("PUT")
+	wfExecSubrouter.HandleFunc("/{workflowExecId}", s.HandleGetWorkflowExec).Methods("GET")
 	wfExecSubrouter.HandleFunc("/", s.HandleGetWorkflowExecs).Methods("GET")
-	wfExecSubrouter.HandleFunc("/{workflowExecID}", s.HandleDeleteWorkflowExec).Methods("DELETE")
-	wfExecSubrouter.HandleFunc("/{workflowExecID}", s.HandleWorkflowExecAction).Methods("POST")
+	wfExecSubrouter.HandleFunc("/{workflowExecId}", s.HandleDeleteWorkflowExec).Methods("DELETE")
+	wfExecSubrouter.HandleFunc("/{workflowExecId}", s.HandleWorkflowExecAction).Methods("POST")
 
-	wfExecSubrouter.HandleFunc("/{workflowExecID}/events", s.HandleCreateOrUpdateEvents).Methods("PUT")
-	wfExecSubrouter.HandleFunc("/{workflowExecID}/events", s.HandleGetEvents).Methods("GET")
-	wfExecSubrouter.HandleFunc("/{workflowExecID}/workItem/{workItemName}/workItemExec/{workItemExecID}/events/{eventID}", s.HandleEventAction).Methods("POST")
+	wfExecSubrouter.HandleFunc("/{workflowExecId}/events", s.HandleCreateOrUpdateEvents).Methods("PUT")
+	wfExecSubrouter.HandleFunc("/{workflowExecId}/events", s.HandleGetEvents).Methods("GET")
+	wfExecSubrouter.HandleFunc("/{workflowExecId}/events", s.HandleEventsAction).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(addr, router))
 }
@@ -92,7 +92,7 @@ func (s *DumbflowServer) HandleGetEvents(w http.ResponseWriter, r *http.Request)
 
 }
 
-func (s *DumbflowServer) HandleEventAction(w http.ResponseWriter, r *http.Request) {
+func (s *DumbflowServer) HandleEventsAction(w http.ResponseWriter, r *http.Request) {
 
 }
 

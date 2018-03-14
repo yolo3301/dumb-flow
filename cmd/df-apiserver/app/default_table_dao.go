@@ -100,7 +100,7 @@ func (dao DefaultTableDAO) CreateOrUpdateWorkflowExec(workflowName string) (stri
 	return id.String(), nil
 }
 
-func (dao DefaultTableDAO) GetWorkflowExec(workflowName string, workflowExecID string) (*model.WorkflowExec, error) {
+func (dao DefaultTableDAO) GetWorkflowExec(workflowName, workflowExecID string) (*model.WorkflowExec, error) {
 	res, err := dao.client.Get(dao.ctx, fmt.Sprintf("%v-%v-%v", model.WorkflowExecPrefix, workflowName, workflowExecID))
 	if err != nil {
 		return nil, err
@@ -139,7 +139,7 @@ func (dao DefaultTableDAO) GetWorkflowExecs(workflowName string) ([]model.Workfl
 	return execs, nil
 }
 
-func (dao DefaultTableDAO) DeleteWorkflowExec(workflowName string, workflowExecID string) error {
+func (dao DefaultTableDAO) DeleteWorkflowExec(workflowName, workflowExecID string) error {
 	res, err := dao.client.Delete(dao.ctx, fmt.Sprintf("%v-%v-%v", model.WorkflowExecPrefix, workflowName, workflowExecID))
 	if err != nil {
 		return err
@@ -149,19 +149,19 @@ func (dao DefaultTableDAO) DeleteWorkflowExec(workflowName string, workflowExecI
 	return nil
 }
 
-func (dao DefaultTableDAO) PauseWorkflowExec(workflowName string, workflowExecID string) error {
+func (dao DefaultTableDAO) PauseWorkflowExec(workflowName, workflowExecID string) error {
 	return dao.UpdateWorkflowExecState(workflowName, workflowExecID, model.WorkflowPaused)
 }
 
-func (dao DefaultTableDAO) AbortWorkflowExec(workflowName string, workflowExecID string) error {
+func (dao DefaultTableDAO) AbortWorkflowExec(workflowName, workflowExecID string) error {
 	return dao.UpdateWorkflowExecState(workflowName, workflowExecID, model.WorkflowAborted)
 }
 
-func (dao DefaultTableDAO) CompleteWorkflowExec(workflowName string, workflowExecID string) error {
+func (dao DefaultTableDAO) CompleteWorkflowExec(workflowName, workflowExecID string) error {
 	return dao.UpdateWorkflowExecState(workflowName, workflowExecID, model.WorkflowCompleted)
 }
 
-func (dao DefaultTableDAO) GetEvents(workflowName string, workflowExecID string, allowedStates map[model.EventState]bool) ([]model.Event, error) {
+func (dao DefaultTableDAO) GetEvents(workflowName, workflowExecID string, allowedStates map[model.EventState]bool) ([]model.Event, error) {
 	res, err := dao.client.Get(dao.ctx, fmt.Sprintf("%v-%v-%v", model.EventPrefix, workflowName, workflowExecID), clientv3.WithPrefix())
 	if err != nil {
 		return nil, err
@@ -183,7 +183,7 @@ func (dao DefaultTableDAO) GetEvents(workflowName string, workflowExecID string,
 	return events, nil
 }
 
-func (dao DefaultTableDAO) CreateOrUpdateEvents(workflowName string, workflowExecID string, events []model.Event) ([]model.Event, error) {
+func (dao DefaultTableDAO) CreateOrUpdateEvents(workflowName, workflowExecID string, events []model.Event) ([]model.Event, error) {
 	var updatedEvents []model.Event
 	for _, e := range events {
 		e.WorkflowName = workflowName
@@ -211,36 +211,11 @@ func (dao DefaultTableDAO) CreateOrUpdateEvents(workflowName string, workflowExe
 	return updatedEvents, nil
 }
 
-func (dao DefaultTableDAO) ResetEvent(workflowName string, workflowExecID string, workflowItemName string, workflowItemExecID string, eventID string) error {
-	res, err := dao.client.Get(dao.ctx, fmt.Sprintf("%v-%v-%v-%v-%v-%v", model.EventPrefix, workflowName, workflowExecID, workflowItemName, workflowItemExecID, eventID))
-	if err != nil {
-		return err
-	}
-	if res.Count == 0 {
-		return fmt.Errorf("Not found")
-	}
-
-	var e model.Event
-	err = json.Unmarshal([]byte(res.Kvs[0].Value), &e)
-	if err != nil {
-		return err
-	}
-
-	e.State = model.EventCreated
-	content, err := json.Marshal(e)
-	if err != nil {
-		return err
-	}
-
-	_, err = dao.client.Put(dao.ctx, e.Key(), string(content))
-	if err != nil {
-		return err
-	}
-
-	return nil
+func (dao DefaultTableDAO) ResetEvents(workflowName, workflowExecID string) error {
+	return fmt.Errorf("Not implemented")
 }
 
-func (dao DefaultTableDAO) UpdateWorkflowExecState(workflowName string, workflowExecID string, state model.WorkflowState) error {
+func (dao DefaultTableDAO) UpdateWorkflowExecState(workflowName, workflowExecID string, state model.WorkflowState) error {
 	exec, err := dao.GetWorkflowExec(workflowName, workflowExecID)
 	if err != nil {
 		return err
