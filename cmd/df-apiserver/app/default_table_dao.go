@@ -188,6 +188,7 @@ func (dao DefaultTableDAO) CreateOrUpdateEvents(workflowName, workflowExecID str
 	for _, e := range events {
 		e.WorkflowName = workflowName
 		e.WorkflowExecID = workflowExecID
+		e.LastModifiedTime = time.Now()
 
 		content, err := json.Marshal(e)
 		if err != nil {
@@ -212,7 +213,35 @@ func (dao DefaultTableDAO) CreateOrUpdateEvents(workflowName, workflowExecID str
 }
 
 func (dao DefaultTableDAO) ResetEvents(workflowName, workflowExecID string) error {
-	return fmt.Errorf("Not implemented")
+	res, err := dao.client.Get(dao.ctx, fmt.Sprintf("%v-%v-%v", model.EventPrefix, workflowName, workflowExecID), clientv3.WithPrefix())
+	if err != nil {
+		return err
+	}
+
+	for _, v := range res.Kvs {
+		var e model.Event
+		err = json.Unmarshal([]byte(v.Value), &e)
+		if err != nil {
+			return fmt.Errorf("Failed to deserialize '%v'", v.Value)
+		}
+
+		// TODO make timeout a workflow config
+		if e.State == model.EventScheduling && time.Since(e.LastModifiedTime) > 5*time.Minute {
+			e.State = model.EventCreated
+			e.LastModifiedTime = time.Now()
+			content, err := json.Marshal(e)
+			if err != nil {
+				return fmt.Errorf("Failed to serialize '%v'", e.Key())
+			}
+
+			_, err = dao.client.Put(dao.ctx, e.Key(), string(content))
+			if err != nil {
+				log.Printf("Failed to put '%v'", e.Key())
+			}
+		}
+	}
+
+	return nil
 }
 
 func (dao DefaultTableDAO) UpdateWorkflowExecState(workflowName, workflowExecID string, state model.WorkflowState) error {
