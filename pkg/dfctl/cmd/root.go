@@ -1,26 +1,23 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
-const (
-	// CLIName is the name of the CLI
-	CLIName = "dfctl"
-)
+var RootCmd = &cobra.Command{
+	Use:   "dfctl",
+	Short: "dfctl is the command line for dumbflow",
+	Run: func(cmd *cobra.Command, args []string) {
+		cmd.HelpFunc()(cmd, args)
+	},
+}
 
-func NewCommand() *cobra.Command {
-	var command = &cobra.Command{
-		Use:   CLIName,
-		Short: "dfctl is the command line for dumbflow",
-		Run: func(cmd *cobra.Command, args []string) {
-			cmd.HelpFunc()(cmd, args)
-		},
+func Execute() {
+	if err := RootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
-
-	command.AddCommand(NewCreateCmd())
-	command.AddCommand(NewDeleteCmd())
-	command.AddCommand(NewGetCmd())
-
-	return command
 }
