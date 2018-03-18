@@ -23,7 +23,7 @@ func NewDumbflowClient() (*DumbflowClient, error) {
 	}
 
 	client := &DumbflowClient{
-		Endpoint: ep,
+		Endpoint: "http://" + ep,
 	}
 
 	return client, nil
