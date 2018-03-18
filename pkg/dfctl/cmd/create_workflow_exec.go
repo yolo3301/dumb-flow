@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -24,13 +25,13 @@ var CreateWorkflowExecCmd = &cobra.Command{
 			log.Panic(err.Error())
 		}
 
-		log.Printf("Created workflow '%v' exec id = '%v'", createWorkflowExecWorkflowName, id)
+		fmt.Printf("Created workflow '%v' exec id = '%v'", createWorkflowExecWorkflowName, id)
 	},
 }
 
 func init() {
 	CreateCommand.AddCommand(CreateWorkflowExecCmd)
 
-	CreateWorkflowExecCmd.Flags().StringVar(&createWorkflowExecWorkflowName, "name", "", "The workflow name")
-	CreateWorkflowExecCmd.MarkFlagRequired("name")
+	CreateWorkflowExecCmd.Flags().StringVar(&createWorkflowExecWorkflowName, "workflow-name", "", "The workflow name")
+	CreateWorkflowExecCmd.MarkFlagRequired("workflow-name")
 }

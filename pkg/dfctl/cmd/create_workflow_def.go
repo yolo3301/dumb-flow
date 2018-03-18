@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -22,7 +23,7 @@ var CreateWorkflowDefCmd = &cobra.Command{
 		}
 
 		configs := make(map[string]string)
-		for _, v := range configs {
+		for _, v := range createWorkflowDefWorkflowConfigs {
 			d := strings.Index(v, "=")
 			if d == -1 || d == len(v)-1 {
 				log.Panicf("Invalid config '%v'", v)
@@ -36,14 +37,14 @@ var CreateWorkflowDefCmd = &cobra.Command{
 			log.Panic(err.Error())
 		}
 
-		log.Printf("Created workflow '%v'", createWorkflowDefWorkflowName)
+		fmt.Printf("Created workflow '%v'", createWorkflowDefWorkflowName)
 	},
 }
 
 func init() {
 	CreateCommand.AddCommand(CreateWorkflowDefCmd)
 
-	CreateWorkflowDefCmd.Flags().StringVar(&createWorkflowDefWorkflowName, "name", "", "The workflow name")
-	CreateWorkflowDefCmd.MarkFlagRequired("name")
+	CreateWorkflowDefCmd.Flags().StringVar(&createWorkflowDefWorkflowName, "workflow-name", "", "The workflow name")
+	CreateWorkflowDefCmd.MarkFlagRequired("workflow-name")
 	createWorkflowDefWorkflowConfigs = *CreateWorkflowDefCmd.Flags().StringSlice("configs", nil, "The workflow configs")
 }

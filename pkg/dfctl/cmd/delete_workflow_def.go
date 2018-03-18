@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -24,13 +25,13 @@ var DeleteWorkflowDefCmd = &cobra.Command{
 			log.Panic(err.Error())
 		}
 
-		log.Printf("Deleted workflow '%v'", deleteWorkflowDefWorkflowName)
+		fmt.Printf("Deleted workflow '%v'", deleteWorkflowDefWorkflowName)
 	},
 }
 
 func init() {
 	DeleteCmd.AddCommand(DeleteWorkflowDefCmd)
 
-	DeleteWorkflowDefCmd.Flags().StringVar(&deleteWorkflowDefWorkflowName, "name", "", "The workflow name")
-	DeleteWorkflowDefCmd.MarkFlagRequired("name")
+	DeleteWorkflowDefCmd.Flags().StringVar(&deleteWorkflowDefWorkflowName, "workflow-name", "", "The workflow name")
+	DeleteWorkflowDefCmd.MarkFlagRequired("workflow-name")
 }

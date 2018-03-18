@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -30,13 +31,13 @@ var GetWorkflowDefCmd = &cobra.Command{
 			log.Fatal(err.Error())
 		}
 
-		log.Print(string(content))
+		fmt.Print(string(content))
 	},
 }
 
 func init() {
 	GetCmd.AddCommand(GetWorkflowDefCmd)
 
-	GetWorkflowDefCmd.Flags().StringVar(&getWorkflowDefWorkflowName, "name", "", "The workflow name")
-	GetWorkflowDefCmd.MarkFlagRequired("name")
+	GetWorkflowDefCmd.Flags().StringVar(&getWorkflowDefWorkflowName, "workflow-name", "", "The workflow name")
+	GetWorkflowDefCmd.MarkFlagRequired("workflow-name")
 }

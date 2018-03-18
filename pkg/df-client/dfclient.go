@@ -62,6 +62,10 @@ func (client *DumbflowClient) GetWorkflowDef(workflowName string) (*model.Workfl
 		return nil, err
 	}
 
+	if bodyBytes == nil {
+		return nil, nil
+	}
+
 	var workflowDef model.WorkflowDef
 	err = json.Unmarshal(bodyBytes, &workflowDef)
 	if err != nil {
@@ -109,6 +113,10 @@ func (client *DumbflowClient) GetWorkflowExec(workflowName, workflowExecID strin
 		return nil, err
 	}
 
+	if bodyBytes == nil {
+		return nil, nil
+	}
+
 	var workflowExec model.WorkflowExec
 	err = json.Unmarshal(bodyBytes, &workflowExec)
 	if err != nil {
@@ -137,6 +145,7 @@ func (client *DumbflowClient) CreateEvent(workflowName, workflowExecID, workItem
 		WorkItemExecID: workItemExecID,
 		Payload:        payload,
 		EventType:      eventType,
+		State:          model.EventCreated,
 	}
 	events := []model.Event{*event}
 
@@ -167,6 +176,10 @@ func (client *DumbflowClient) GetEvents(workflowName, workflowExecID string) ([]
 		return nil, err
 	}
 
+	if bodyBytes == nil {
+		return nil, nil
+	}
+
 	var events []model.Event
 	err = json.Unmarshal(bodyBytes, &events)
 	if err != nil {
@@ -191,6 +204,10 @@ func (client *DumbflowClient) sendGetRequest(requestURL string) ([]byte, error) 
 
 	if err != nil {
 		return nil, err
+	}
+
+	if res.StatusCode == 404 {
+		return nil, nil
 	}
 
 	defer res.Body.Close()

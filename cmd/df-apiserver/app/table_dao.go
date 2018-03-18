@@ -13,6 +13,7 @@ type TableDAO interface {
 	GetWorkflowExec(workflowName, workflowExecID string) (*model.WorkflowExec, error)
 	GetWorkflowExecs(workflowName string) ([]model.WorkflowExec, error)
 	DeleteWorkflowExec(workflowName, workflowExecID string) error
+	DeleteWorkflowExecCascade(workflowName, workflowExecID string) error
 	UpdateWorkflowExecState(workflowName, workflowExecID string, state model.WorkflowState) error
 	CreateWorkItemExec(workflowName, workflowExecID, workItemName string) (string, error)
 	GetWorkItemExec(workflowName, workflowExecID, workItemName, workItemExecID string) (*model.WorkItemExec, error)
@@ -21,6 +22,7 @@ type TableDAO interface {
 	UpdateWorkItemExecState(workflowName, workflowExecID, workItemName, workItemExecID, state string) error
 	GetEvents(workflowName, workflowExecID string, allowedStates map[model.EventState]bool) ([]model.Event, error)
 	CreateOrUpdateEvents(events []model.Event) ([]model.Event, error)
+	DeleteEvents(workflowName, workflowExecID string) error
 	ResetEvents(workflowName, workflowExecID string) error
 
 	// Test only, should remove later.

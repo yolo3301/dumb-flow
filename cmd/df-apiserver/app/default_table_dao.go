@@ -61,8 +61,8 @@ func (dao DefaultTableDAO) GetWorkflowDef(workflowName string) (*model.WorkflowD
 		return nil, err
 	}
 
-	if len(res.Kvs) == 0 {
-		return nil, fmt.Errorf("Not found")
+	if res.Count == 0 {
+		return nil, nil
 	}
 
 	var workflowDef model.WorkflowDef
@@ -107,7 +107,7 @@ func (dao DefaultTableDAO) GetWorkflowExec(workflowName, workflowExecID string) 
 	}
 
 	if res.Count == 0 {
-		return nil, fmt.Errorf("Not found")
+		return nil, nil
 	}
 
 	var exec model.WorkflowExec
@@ -120,7 +120,7 @@ func (dao DefaultTableDAO) GetWorkflowExec(workflowName, workflowExecID string) 
 }
 
 func (dao DefaultTableDAO) GetWorkflowExecs(workflowName string) ([]model.WorkflowExec, error) {
-	res, err := dao.client.Get(dao.ctx, fmt.Sprintf("%v-%v", model.WorkflowExecPrefix, workflowName), clientv3.WithPrefix())
+	res, err := dao.client.Get(dao.ctx, fmt.Sprintf("%v-%v-", model.WorkflowExecPrefix, workflowName), clientv3.WithPrefix())
 	if err != nil {
 		return nil, err
 	}
@@ -146,6 +146,27 @@ func (dao DefaultTableDAO) DeleteWorkflowExec(workflowName, workflowExecID strin
 	}
 
 	log.Print(res.Header)
+	return nil
+}
+
+func (dao DefaultTableDAO) DeleteWorkflowExecCascade(workflowName, workflowExecID string) error {
+	err := dao.DeleteWorkflowExec(workflowName, workflowExecID)
+	if err != nil {
+		return err
+	}
+
+	res, err := dao.client.Delete(dao.ctx, fmt.Sprintf("%v-%v-%v-", model.WorkItemExecPrefix, workflowName, workflowExecID), clientv3.WithPrefix())
+	if err != nil {
+		return err
+	}
+
+	log.Print(res.Deleted)
+
+	err = dao.DeleteEvents(workflowName, workflowExecID)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -202,7 +223,7 @@ func (dao DefaultTableDAO) GetWorkItemExec(workflowName, workflowExecID, workIte
 }
 
 func (dao DefaultTableDAO) GetWorkItemExecs(workflowName, workflowExecID, workItemName string) ([]model.WorkItemExec, error) {
-	res, err := dao.client.Get(dao.ctx, fmt.Sprintf("%v-%v-%v-%v", model.WorkItemExecPrefix, workflowName, workflowExecID, workItemName), clientv3.WithPrefix())
+	res, err := dao.client.Get(dao.ctx, fmt.Sprintf("%v-%v-%v-%v-", model.WorkItemExecPrefix, workflowName, workflowExecID, workItemName), clientv3.WithPrefix())
 	if err != nil {
 		return nil, err
 	}
@@ -247,7 +268,7 @@ func (dao DefaultTableDAO) UpdateWorkItemExecState(workflowName, workflowExecID,
 }
 
 func (dao DefaultTableDAO) GetEvents(workflowName, workflowExecID string, allowedStates map[model.EventState]bool) ([]model.Event, error) {
-	res, err := dao.client.Get(dao.ctx, fmt.Sprintf("%v-%v-%v", model.EventPrefix, workflowName, workflowExecID), clientv3.WithPrefix())
+	res, err := dao.client.Get(dao.ctx, fmt.Sprintf("%v-%v-%v-", model.EventPrefix, workflowName, workflowExecID), clientv3.WithPrefix())
 	if err != nil {
 		return nil, err
 	}
@@ -260,7 +281,7 @@ func (dao DefaultTableDAO) GetEvents(workflowName, workflowExecID string, allowe
 			log.Printf("Failed to deserialize '%v'", v.Value)
 		}
 
-		if allowedStates[e.State] {
+		if allowedStates == nil || allowedStates[e.State] {
 			events = append(events, e)
 		}
 	}
@@ -294,8 +315,19 @@ func (dao DefaultTableDAO) CreateOrUpdateEvents(events []model.Event) ([]model.E
 	return updatedEvents, nil
 }
 
+func (dao DefaultTableDAO) DeleteEvents(workflowName, workflowExecID string) error {
+	res, err := dao.client.Delete(dao.ctx, fmt.Sprintf("%v-%v-%v-", model.EventPrefix, workflowName, workflowExecID), clientv3.WithPrefix())
+	if err != nil {
+		return err
+	}
+
+	log.Print(res.Header)
+
+	return nil
+}
+
 func (dao DefaultTableDAO) ResetEvents(workflowName, workflowExecID string) error {
-	res, err := dao.client.Get(dao.ctx, fmt.Sprintf("%v-%v-%v", model.EventPrefix, workflowName, workflowExecID), clientv3.WithPrefix())
+	res, err := dao.client.Get(dao.ctx, fmt.Sprintf("%v-%v-%v-", model.EventPrefix, workflowName, workflowExecID), clientv3.WithPrefix())
 	if err != nil {
 		return err
 	}

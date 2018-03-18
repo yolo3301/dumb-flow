@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/yolo3301/dumb-flow/pkg/df-model"
@@ -37,24 +38,22 @@ var CreateEventCmd = &cobra.Command{
 			log.Panic(err.Error())
 		}
 
-		log.Printf("Created event id = '%v'", id)
+		fmt.Printf("Created event id = '%v'", id)
 	},
 }
 
 func init() {
 	CreateCommand.AddCommand(CreateEventCmd)
 
-	CreateEventCmd.Flags().StringVar(&createEventWorkflowName, "workflow", "", "The workflow name")
-	CreateEventCmd.MarkFlagRequired("workflow")
+	CreateEventCmd.Flags().StringVar(&createEventWorkflowName, "workflow-name", "", "The workflow name")
+	CreateEventCmd.MarkFlagRequired("workflow-name")
 
 	CreateEventCmd.Flags().StringVar(&createEventWorkflowExecID, "workflow-exec", "", "The workflow exec id")
 	CreateEventCmd.MarkFlagRequired("workflow-exec")
 
-	CreateEventCmd.Flags().StringVar(&createEventWorkItemName, "workitem", "", "The work item name")
-	CreateEventCmd.MarkFlagRequired("workitem")
+	CreateEventCmd.Flags().StringVar(&createEventWorkItemName, "workitem-name", "", "The work item name")
 
 	CreateEventCmd.Flags().StringVar(&createEventWorkItemExecID, "workitem-exec", "", "The work item exec id")
-	CreateEventCmd.MarkFlagRequired("workitem-exec")
 
 	CreateEventCmd.Flags().StringVar(&createEventType, "type", "", "The event type")
 	CreateEventCmd.MarkFlagRequired("type")

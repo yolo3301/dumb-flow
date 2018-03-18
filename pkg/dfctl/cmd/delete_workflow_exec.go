@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -25,18 +26,18 @@ var DeleteWorkflowExecCmd = &cobra.Command{
 			log.Panic(err.Error())
 		}
 
-		log.Printf("Deleted workflow exec '%v'", deleteWorkflowExecWorkflowExecID)
+		fmt.Printf("Deleted workflow exec '%v'", deleteWorkflowExecWorkflowExecID)
 	},
 }
 
 func init() {
 	DeleteCmd.AddCommand(DeleteWorkflowExecCmd)
 
-	DeleteWorkflowExecCmd.Flags().StringVar(&deleteWorkflowDefWorkflowName, "name", "", "The workflow name")
-	DeleteWorkflowExecCmd.MarkFlagRequired("name")
+	DeleteWorkflowExecCmd.Flags().StringVar(&deleteWorkflowDefWorkflowName, "workflow-name", "", "The workflow name")
+	DeleteWorkflowExecCmd.MarkFlagRequired("workflow-name")
 
-	DeleteWorkflowExecCmd.Flags().StringVar(&deleteWorkflowExecWorkflowExecID, "exec", "", "The workflow exec id")
-	DeleteWorkflowExecCmd.MarkFlagRequired("exec")
+	DeleteWorkflowExecCmd.Flags().StringVar(&deleteWorkflowExecWorkflowExecID, "workflow-exec", "", "The workflow exec id")
+	DeleteWorkflowExecCmd.MarkFlagRequired("workflow-exec")
 
 	// todo add cascade option
 }

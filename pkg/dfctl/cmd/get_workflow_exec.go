@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -31,18 +32,18 @@ var GetWorkflowExecCmd = &cobra.Command{
 			log.Fatal(err.Error())
 		}
 
-		log.Print(string(content))
+		fmt.Print(string(content))
 	},
 }
 
 func init() {
 	GetCmd.AddCommand(GetWorkflowExecCmd)
 
-	GetWorkflowExecCmd.Flags().StringVar(&getWorkflowDefWorkflowName, "name", "", "The workflow name")
-	GetWorkflowExecCmd.MarkFlagRequired("name")
+	GetWorkflowExecCmd.Flags().StringVar(&getWorkflowDefWorkflowName, "workflow-name", "", "The workflow name")
+	GetWorkflowExecCmd.MarkFlagRequired("workflow-name")
 
-	GetWorkflowExecCmd.Flags().StringVar(&getWorkflowExecWorkflowExecID, "exec", "", "The workflow exec id")
-	GetWorkflowExecCmd.MarkFlagRequired("exec")
+	GetWorkflowExecCmd.Flags().StringVar(&getWorkflowExecWorkflowExecID, "workflow-exec", "", "The workflow exec id")
+	GetWorkflowExecCmd.MarkFlagRequired("workflow-exec")
 
 	// todo add expand option
 }
