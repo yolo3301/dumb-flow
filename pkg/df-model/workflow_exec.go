@@ -38,5 +38,5 @@ func (exec *WorkflowExec) Key() string {
 }
 
 func (exec *WorkItemExec) Key() string {
-	return fmt.Sprintf("%v-%v-%v-%v", WorkItemExecPrefix, exec.WorkflowName, exec.WorkflowExecID, exec.WorkItemName)
+	return fmt.Sprintf("%v-%v-%v-%v-%v", WorkItemExecPrefix, exec.WorkflowName, exec.WorkflowExecID, exec.WorkItemName, exec.ID)
 }
