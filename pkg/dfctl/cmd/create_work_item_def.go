@@ -37,5 +37,5 @@ func init() {
 	CreateWorkItemDefCmd.MarkFlagRequired("workflow-name")
 	CreateWorkItemDefCmd.Flags().StringVar(&createWorkItemDefWorkItemName, "workitem-name", "", "The work item name")
 	CreateWorkItemDefCmd.MarkFlagRequired("workitem-name")
-	createWorkflowDefWorkflowConfigs = *CreateWorkItemDefCmd.Flags().StringSlice("configs", nil, "The work item configs")
+	createWorkflowDefWorkflowConfigs = *(CreateWorkItemDefCmd.Flags().StringSlice("configs", nil, "The work item configs"))
 }

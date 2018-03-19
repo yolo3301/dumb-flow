@@ -39,6 +39,7 @@ func (s *DumbflowServer) Run() {
 	wfExecSubrouter := wfDefSubrouter.PathPrefix("/workflowExec").Subrouter()
 	eventsSubrouter := wfExecSubrouter.PathPrefix("/{workflowExecId}/events").Subrouter()
 
+	router.HandleFunc("/workflowDef", s.HandleGetWorkflowDefs).Methods("GET")
 	wfDefSubrouter.HandleFunc("", s.HandleCreateOrUpdateWorkflowDef).Methods("PUT")
 	wfDefSubrouter.HandleFunc("", s.HandleGetWorkflowDef).Methods("GET")
 	wfDefSubrouter.HandleFunc("", s.HandleDeleteWorkflowDef).Methods("DELETE")
@@ -51,6 +52,7 @@ func (s *DumbflowServer) Run() {
 
 	eventsSubrouter.HandleFunc("", s.HandleCreateEvents).Methods("PUT")
 	eventsSubrouter.HandleFunc("", s.HandleGetEvents).Methods("GET")
+	eventsSubrouter.HandleFunc("", s.HandleDeleteEvents).Methods("DELETE")
 	eventsSubrouter.HandleFunc("", s.HandleEventsAction).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(addr, router))
@@ -95,6 +97,19 @@ func (s *DumbflowServer) HandleGetWorkflowDef(w http.ResponseWriter, r *http.Req
 	}
 
 	json.NewEncoder(w).Encode(workflowDef)
+}
+
+func (s *DumbflowServer) HandleGetWorkflowDefs(w http.ResponseWriter, r *http.Request) {
+	workflowDefs, err := s.tableDAO.GetWorkflowDefs()
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+
+	if workflowDefs == nil {
+		http.Error(w, "Workflow defs not found", 404)
+	}
+
+	json.NewEncoder(w).Encode(workflowDefs)
 }
 
 func (s *DumbflowServer) HandleDeleteWorkflowDef(w http.ResponseWriter, r *http.Request) {
@@ -196,10 +211,21 @@ func (s *DumbflowServer) HandleGetEvents(w http.ResponseWriter, r *http.Request)
 
 	events, err := s.tableDAO.GetEvents(workflowName, execID, nil)
 	if err != nil {
-		http.Error(w, err.Error(), 400)
+		http.Error(w, err.Error(), 500)
 	}
 
 	json.NewEncoder(w).Encode(events)
+}
+
+func (s *DumbflowServer) HandleDeleteEvents(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	workflowName := vars["workflowName"]
+	execID := vars["workflowExecId"]
+
+	err := s.tableDAO.DeleteEvents(workflowName, execID)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
 }
 
 func (s *DumbflowServer) HandleEventsAction(w http.ResponseWriter, r *http.Request) {

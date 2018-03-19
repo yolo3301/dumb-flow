@@ -21,17 +21,31 @@ var GetWorkflowDefCmd = &cobra.Command{
 			log.Fatal(err.Error())
 		}
 
-		def, err := client.GetWorkflowDef(getWorkflowDefWorkflowName)
-		if err != nil {
-			log.Panic(err.Error())
+		var content []byte
+
+		if getWorkflowDefWorkflowName != "" {
+			def, err := client.GetWorkflowDef(getWorkflowDefWorkflowName)
+			if err != nil {
+				log.Panic(err.Error())
+			}
+
+			content, err = json.Marshal(def)
+			if err != nil {
+				log.Fatal(err.Error())
+			}
+		} else {
+			defs, err := client.GetWorkflowDefs()
+			if err != nil {
+				log.Panic(err.Error())
+			}
+
+			content, err = json.Marshal(defs)
+			if err != nil {
+				log.Fatal(err.Error())
+			}
 		}
 
-		content, err := json.Marshal(def)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-
-		fmt.Print(string(content))
+		fmt.Println(string(content))
 	},
 }
 
@@ -39,5 +53,4 @@ func init() {
 	GetCmd.AddCommand(GetWorkflowDefCmd)
 
 	GetWorkflowDefCmd.Flags().StringVar(&getWorkflowDefWorkflowName, "workflow-name", "", "The workflow name")
-	GetWorkflowDefCmd.MarkFlagRequired("workflow-name")
 }

@@ -22,17 +22,31 @@ var GetWorkflowExecCmd = &cobra.Command{
 			log.Fatal(err.Error())
 		}
 
-		exec, err := client.GetWorkflowExec(getWorkflowDefWorkflowName, getWorkflowExecWorkflowExecID)
-		if err != nil {
-			log.Panic(err.Error())
+		var content []byte
+
+		if getWorkflowExecWorkflowExecID != "" {
+			exec, err := client.GetWorkflowExec(getWorkflowDefWorkflowName, getWorkflowExecWorkflowExecID)
+			if err != nil {
+				log.Panic(err.Error())
+			}
+
+			content, err = json.Marshal(exec)
+			if err != nil {
+				log.Fatal(err.Error())
+			}
+		} else {
+			execs, err := client.GetWorkflowExecs(getWorkflowDefWorkflowName)
+			if err != nil {
+				log.Panic(err.Error())
+			}
+
+			content, err = json.Marshal(execs)
+			if err != nil {
+				log.Fatal(err.Error())
+			}
 		}
 
-		content, err := json.Marshal(exec)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-
-		fmt.Print(string(content))
+		fmt.Println(string(content))
 	},
 }
 
@@ -43,7 +57,6 @@ func init() {
 	GetWorkflowExecCmd.MarkFlagRequired("workflow-name")
 
 	GetWorkflowExecCmd.Flags().StringVar(&getWorkflowExecWorkflowExecID, "workflow-exec", "", "The workflow exec id")
-	GetWorkflowExecCmd.MarkFlagRequired("workflow-exec")
 
 	// todo add expand option
 }

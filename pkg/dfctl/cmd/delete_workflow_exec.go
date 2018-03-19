@@ -26,7 +26,7 @@ var DeleteWorkflowExecCmd = &cobra.Command{
 			log.Panic(err.Error())
 		}
 
-		fmt.Printf("Deleted workflow exec '%v'", deleteWorkflowExecWorkflowExecID)
+		fmt.Printf("Deleted workflow exec '%v'\n", deleteWorkflowExecWorkflowExecID)
 	},
 }
 

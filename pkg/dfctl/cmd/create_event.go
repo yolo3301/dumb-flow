@@ -38,7 +38,7 @@ var CreateEventCmd = &cobra.Command{
 			log.Panic(err.Error())
 		}
 
-		fmt.Printf("Created event id = '%v'", id)
+		fmt.Printf("Created event id = '%v'\n", id)
 	},
 }
 

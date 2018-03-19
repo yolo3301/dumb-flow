@@ -25,7 +25,7 @@ var CreateWorkflowExecCmd = &cobra.Command{
 			log.Panic(err.Error())
 		}
 
-		fmt.Printf("Created workflow '%v' exec id = '%v'", createWorkflowExecWorkflowName, id)
+		fmt.Printf("Created workflow '%v' exec id = '%v'\n", createWorkflowExecWorkflowName, id)
 	},
 }
 

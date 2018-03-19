@@ -9,6 +9,7 @@ type TableDAO interface {
 	CreateOrUpdateWorkflowDef(workflowDef *model.WorkflowDef) error
 	DeleteWorkflowDef(workflowName string) error
 	GetWorkflowDef(workflowName string) (*model.WorkflowDef, error)
+	GetWorkflowDefs() ([]model.WorkflowDef, error)
 	CreateWorkflowExec(workflowName string) (string, error)
 	GetWorkflowExec(workflowName, workflowExecID string) (*model.WorkflowExec, error)
 	GetWorkflowExecs(workflowName string) ([]model.WorkflowExec, error)

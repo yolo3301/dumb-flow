@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: df-server
-        image: shou3301/df:tst4
+        image: shou3301/df:tst6
         env:
         - name: ETCD_ENDPOINT
           value: "example-etcd-cluster-client:2379"

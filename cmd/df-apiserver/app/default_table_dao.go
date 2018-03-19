@@ -74,6 +74,27 @@ func (dao DefaultTableDAO) GetWorkflowDef(workflowName string) (*model.WorkflowD
 	return &workflowDef, nil
 }
 
+func (dao DefaultTableDAO) GetWorkflowDefs() ([]model.WorkflowDef, error) {
+	res, err := dao.client.Get(dao.ctx, fmt.Sprintf("%v-", model.WorkflowDefPrefix), clientv3.WithPrefix())
+	if err != nil {
+		return nil, err
+	}
+
+	var workflowDefs []model.WorkflowDef
+
+	for _, v := range res.Kvs {
+		var def model.WorkflowDef
+		err = json.Unmarshal([]byte(v.Value), &def)
+		if err != nil {
+			log.Print("Failed to deserialize some def")
+		} else {
+			workflowDefs = append(workflowDefs, def)
+		}
+	}
+
+	return workflowDefs, nil
+}
+
 func (dao DefaultTableDAO) DeleteWorkflowDef(workflowName string) error {
 	res, err := dao.client.Delete(dao.ctx, fmt.Sprintf("%v-%v", model.WorkflowDefPrefix, workflowName))
 	if err != nil {

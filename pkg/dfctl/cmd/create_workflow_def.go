@@ -37,7 +37,7 @@ var CreateWorkflowDefCmd = &cobra.Command{
 			log.Panic(err.Error())
 		}
 
-		fmt.Printf("Created workflow '%v'", createWorkflowDefWorkflowName)
+		fmt.Printf("Created workflow '%v'\n", createWorkflowDefWorkflowName)
 	},
 }
 
@@ -46,5 +46,5 @@ func init() {
 
 	CreateWorkflowDefCmd.Flags().StringVar(&createWorkflowDefWorkflowName, "workflow-name", "", "The workflow name")
 	CreateWorkflowDefCmd.MarkFlagRequired("workflow-name")
-	createWorkflowDefWorkflowConfigs = *CreateWorkflowDefCmd.Flags().StringSlice("configs", nil, "The workflow configs")
+	CreateWorkflowDefCmd.Flags().StringSliceVar(&createWorkflowDefWorkflowConfigs, "configs", nil, "The workflow configs e.g. c1=v1,c2=v2")
 }

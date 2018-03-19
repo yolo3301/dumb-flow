@@ -72,11 +72,27 @@ func (client *DumbflowClient) GetWorkflowDef(workflowName string) (*model.Workfl
 		return nil, err
 	}
 
+	return &workflowDef, nil
+}
+
+func (client *DumbflowClient) GetWorkflowDefs() ([]model.WorkflowDef, error) {
+	requestURL := fmt.Sprintf("%v/workflowDef", client.Endpoint)
+	bodyBytes, err := client.sendGetRequest(requestURL)
 	if err != nil {
 		return nil, err
 	}
 
-	return &workflowDef, nil
+	if bodyBytes == nil {
+		return nil, nil
+	}
+
+	var workflowDefs []model.WorkflowDef
+	err = json.Unmarshal(bodyBytes, &workflowDefs)
+	if err != nil {
+		return nil, err
+	}
+
+	return workflowDefs, nil
 }
 
 func (client *DumbflowClient) DeleteWorkflowDef(workflowName string) error {
@@ -128,6 +144,30 @@ func (client *DumbflowClient) GetWorkflowExec(workflowName, workflowExecID strin
 	}
 
 	return &workflowExec, nil
+}
+
+func (client *DumbflowClient) GetWorkflowExecs(workflowName string) ([]model.WorkflowExec, error) {
+	requestURL := fmt.Sprintf("%v/workflowDef/%v/workflowExec", client.Endpoint, workflowName)
+	bodyBytes, err := client.sendGetRequest(requestURL)
+	if err != nil {
+		return nil, err
+	}
+
+	if bodyBytes == nil {
+		return nil, nil
+	}
+
+	var workflowExecs []model.WorkflowExec
+	err = json.Unmarshal(bodyBytes, &workflowExecs)
+	if err != nil {
+		return nil, err
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return workflowExecs, nil
 }
 
 func (client *DumbflowClient) DeleteWorkflowExec(workflowName, workflowExecID string) error {
@@ -191,6 +231,11 @@ func (client *DumbflowClient) GetEvents(workflowName, workflowExecID string) ([]
 	}
 
 	return events, nil
+}
+
+func (client *DumbflowClient) DeleteEvents(workflowName, workflowExecID string) error {
+	requestURL := fmt.Sprintf("%v/workflowDef/%v/workflowExec/%v/events", client.Endpoint, workflowName, workflowExecID)
+	return client.sendDeleteRequest(requestURL)
 }
 
 func (client *DumbflowClient) sendGetRequest(requestURL string) ([]byte, error) {
