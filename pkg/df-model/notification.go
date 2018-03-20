@@ -1,6 +1,6 @@
 package model
 
 type Notification struct {
-	WorkflowName   string
-	WorkflowExecID string
+	WorkflowName   string `json:"workflowName"`
+	WorkflowExecID string `json:"workflowExecID"`
 }

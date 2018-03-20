@@ -32,7 +32,15 @@
 [[constraint]]
   name = "github.com/satori/go.uuid"
   version = "1.2.0"
+<<<<<<< Updated upstream
 
 [[constraint]]
   name = "github.com/spf13/cobra"
   version = "0.0.1"
+||||||| merged common ancestors
+=======
+
+[[constraint]]
+  name = "github.com/Shopify/sarama.git"
+  version = "1.16.0"
+>>>>>>> Stashed changes

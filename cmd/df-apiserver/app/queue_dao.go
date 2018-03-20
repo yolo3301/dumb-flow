@@ -11,6 +11,7 @@ type QueueDAO interface {
 	EnqueueEvents(topic string, events []model.Event) ([]model.Event, error)
 	DequeueEvents(topic string, count int) ([]model.Event, error)
 
+	Close()
 	// Test only, remove later.
-	SanityCheck() (string, error)
+	//SanityCheck() (string, error)
 }
