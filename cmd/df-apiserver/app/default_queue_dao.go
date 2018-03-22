@@ -7,49 +7,21 @@ import (
 
 	"github.com/Shopify/sarama"
 
-	"crypto/tls"
-	"crypto/x509"
+	// "crypto/tls"
+	// "crypto/x509"
 	"encoding/json"
 	"errors"
 	"flag"
-	"io/ioutil"
+	// "io/ioutil"
 	"log"
 	"os"
 	"strings"
 )
 
 var (
-	certFile          = flag.String("certificate", "", "The optional certificate file for client authentication")
-	keyFile           = flag.String("key", "", "The optional key file for client authentication")
-	caFile            = flag.String("ca", "", "The optional certificate authority file for TLS client authentication")
-	verifySsl         = flag.Bool("verify", false, "Optional verify ssl certificates chain")
 	notificationTopic = "notification"
 )
 
-func createTLSConfiguration() (t *tls.Config) {
-	if *certFile != "" && *keyFile != "" && *caFile != "" {
-		cert, err := tls.LoadX509KeyPair(*certFile, *keyFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		caCert, err := ioutil.ReadFile(*caFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		caCertPool := x509.NewCertPool()
-		caCertPool.AppendCertsFromPEM(caCert)
-
-		t = &tls.Config{
-			Certificates:       []tls.Certificate{cert},
-			RootCAs:            caCertPool,
-			InsecureSkipVerify: *verifySsl,
-		}
-	}
-	// will be nil by default if nothing is provided
-	return t
-}
 
 // DefaultQueueDAO - queue dao
 type DefaultQueueDAO struct {
@@ -76,17 +48,13 @@ func NewDefaultQueueDAO() (*DefaultQueueDAO, error) {
 	log.Printf("Kafka brokers: %s", strings.Join(brokerList, ", "))
 
 	// prepare configs for producer
-	config := sarama.NewConfig()
-	config.Producer.RequiredAcks = sarama.WaitForAll
-	config.Producer.Retry.Max = 10 // Retry up to 10 times to produce the message
-	config.Producer.Return.Successes = true
-	tlsConfig := createTLSConfiguration()
-	if tlsConfig != nil {
-		config.Net.TLS.Config = tlsConfig
-		config.Net.TLS.Enable = true
-	}
+	// config := sarama.NewConfig()
+	// config.Producer.RequiredAcks = sarama.WaitForAll
+	// config.Producer.Retry.Max = 10 // Retry up to 10 times to produce the message
+	// config.Producer.Return.Successes = true
 
-	producer, err := sarama.NewSyncProducer(brokerList, config)
+	// temp - use default config
+	producer, err := sarama.NewSyncProducer(brokerList, nil)
 	if err != nil {
 		log.Fatal("Failed to initate producer")
 	}
@@ -97,6 +65,8 @@ func NewDefaultQueueDAO() (*DefaultQueueDAO, error) {
 	}
 
 	return &DefaultQueueDAO{producer: producer, consumer: consumer}, nil
+
+	// TODO: need to use Offset_manager to mark offset
 }
 
 // EnqueueNotification - enqueue notice
@@ -215,6 +185,13 @@ func (dao DefaultQueueDAO) Close() {
 	dao.producer.Close()
 }
 
-// func (dao DefaultQueueDAO) SanityCheck() (string, error) {
-// 	return "", fmt.Errorf("Not implemented")
-// }
+// SanityCheck - check for QueueDao
+func (dao DefaultQueueDAO) SanityCheck() (string, error) {
+	// create topic: testqueue
+
+	// producer - enqueue
+
+	// consumer - dequeue
+
+	return "", fmt.Errorf("Not implemented")
+}

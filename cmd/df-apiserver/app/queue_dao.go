@@ -13,5 +13,5 @@ type QueueDAO interface {
 
 	Close()
 	// Test only, remove later.
-	//SanityCheck() (string, error)
+	SanityCheck() (string, error)
 }

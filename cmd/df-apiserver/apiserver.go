@@ -15,8 +15,11 @@ func main() {
 	}
 	defer table.Close()
 
-	queue := app.DefaultQueueDAO{}
-
+	queue, err := app.NewDefaultQueueDAO()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
 	server := app.NewDumbflowServer(table, queue)
 	server.Run()
 }

@@ -34,6 +34,7 @@ func (s *DumbflowServer) Run() {
 	router := mux.NewRouter()
 	router.HandleFunc("/sanitycheck", s.HandleSanityTest).Methods("GET")
 	router.HandleFunc("/tablesanitycheck", s.HandleTableSanityCheck).Methods("GET")
+	router.HandleFunc("/queuesanitycheck", s.HandleQueueSanityCheck).Methods("GET")
 
 	wfDefSubrouter := router.PathPrefix("/workflowDef/{workflowName}").Subrouter()
 	wfExecSubrouter := wfDefSubrouter.PathPrefix("/workflowExec").Subrouter()
@@ -242,6 +243,16 @@ func (s *DumbflowServer) HandleTableSanityCheck(w http.ResponseWriter, r *http.R
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
+	}
+
+	w.Write([]byte(res))
+}
+
+// HandleQueueSanityCheck - sanity check for QueueDao
+func (s *DumbflowServer) HandleQueueSanityCheck(w http.ResponseWriter, r *http.Request) {
+	res, err := s.queueDAO.SanityCheck()
+	if err != nil {
+		http.Error(w, err.Error(), 500)
 	}
 
 	w.Write([]byte(res))
