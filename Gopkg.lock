@@ -8,10 +8,10 @@
   version = "v1.16.0"
 
 [[projects]]
-  name = "github.com/Shopify/sarama.git"
+  name = "github.com/bsm/sarama-cluster.git"
   packages = ["."]
-  revision = "f7be6aa2bc7b2e38edf816b08b582782194a1c02"
-  version = "v1.16.0"
+  revision = "cf455bc755fe41ac9bb2861e7a961833d9c2ecc3"
+  version = "v2.1.13"
 
 [[projects]]
   name = "github.com/coreos/etcd"
@@ -91,15 +91,12 @@
   version = "v1.6.1"
 
 [[projects]]
-<<<<<<< Updated upstream
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
   revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
   version = "v1.0"
 
 [[projects]]
-||||||| merged common ancestors
-=======
   name = "github.com/pierrec/lz4"
   packages = ["."]
   revision = "2fcda4cb7018ce05a25959d2fe08c83e3329f169"
@@ -118,7 +115,6 @@
   revision = "8732c616f52954686704c8645fe1a9d59e9df7c1"
 
 [[projects]]
->>>>>>> Stashed changes
   name = "github.com/satori/go.uuid"
   packages = ["."]
   revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
@@ -211,12 +207,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-<<<<<<< Updated upstream
-  inputs-digest = "9e5f04e1e0afa455f789435386751c2950786eaaa596110e3e644db8db632b53"
-||||||| merged common ancestors
-  inputs-digest = "ee06345b6a88ae5eea05d002daae7275965d2726189cfd3384e8145bb5dcab7a"
-=======
-  inputs-digest = "9fd9fda6153aab1c1a3134ecb8fbe82a3f303e60e9e3fe9b4b4a08fec35d2792"
->>>>>>> Stashed changes
+  inputs-digest = "c916eb371528e9d00a080510674964425b940c7451520a99858ea507355aabc7"
   solver-name = "gps-cdcl"
   solver-version = 1

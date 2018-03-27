@@ -2,10 +2,12 @@ package app
 
 import (
 	"fmt"
+	"os/signal"
 
 	model "github.com/yolo3301/dumb-flow/pkg/df-model"
 
 	"github.com/Shopify/sarama"
+	"github.com/bsm/sarama-cluster"
 
 	// "crypto/tls"
 	// "crypto/x509"
@@ -19,9 +21,9 @@ import (
 )
 
 var (
-	notificationTopic = "notification"
+	notificationTopic = []string{"notification"}
+	notificationGroup = "notice-group"
 )
-
 
 // DefaultQueueDAO - queue dao
 type DefaultQueueDAO struct {
@@ -34,7 +36,9 @@ type DefaultQueueDAO struct {
 			})
 	*/
 
-	consumer sarama.Consumer
+	config     *cluster.Config
+	brokerList []string
+	// consumer sarama.Consumer
 }
 
 // NewDefaultQueueDAO init-connection
@@ -59,12 +63,12 @@ func NewDefaultQueueDAO() (*DefaultQueueDAO, error) {
 		log.Fatal("Failed to initate producer")
 	}
 
-	consumer, err := sarama.NewConsumer(brokerList, nil)
-	if err != nil {
-		log.Fatal("Failed to initate consumer")
-	}
+	// init (custom) config, enable errors and notifications
+	config := cluster.NewConfig()
+	config.Consumer.Return.Errors = true
+	config.Consumer.Offsets.Initial = sarama.OffsetOldest
 
-	return &DefaultQueueDAO{producer: producer, consumer: consumer}, nil
+	return &DefaultQueueDAO{producer: producer, config: config, brokerList: brokerList}, nil
 
 	// TODO: need to use Offset_manager to mark offset
 }
@@ -82,7 +86,7 @@ func (dao DefaultQueueDAO) EnqueueNotification(notifications []model.Notificatio
 
 		// assume only one partition for one topic, keep order
 		partition, _, err := dao.producer.SendMessage(&sarama.ProducerMessage{
-			Topic: notificationTopic,
+			Topic: notificationTopic[0],
 			Value: sarama.StringEncoder(string(body)),
 		})
 
@@ -102,24 +106,40 @@ func (dao DefaultQueueDAO) EnqueueNotification(notifications []model.Notificatio
 // DequeueNotification - dequeue notice
 func (dao DefaultQueueDAO) DequeueNotification(count int) ([]model.Notification, error) {
 	var noticeArr []model.Notification
-	partitionList, err := dao.consumer.Partitions(notificationTopic)
+	consumer, err := cluster.NewConsumer(dao.brokerList, notificationGroup, notificationTopic, dao.config)
 	if err != nil {
 		return noticeArr, err
 	}
+	defer consumer.Close()
 
-	partitionConsumer, err := dao.consumer.ConsumePartition(notificationTopic, partitionList[0], sarama.OffsetNewest)
-	if err != nil {
-		return noticeArr, err
-	}
+	// trap SIGINT to trigger a shutdown.
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt)
 
-	for i := 0; i < count; i++ {
-		message := <-partitionConsumer.Messages()
-		var notice model.Notification
-		err := json.Unmarshal(message.Value, &notice)
-		if err != nil {
-			break
+	// consume errors
+	go func() {
+		for err := range consumer.Errors() {
+			log.Printf("Error: %s\n", err.Error())
 		}
-		noticeArr = append(noticeArr, notice)
+	}()
+
+	// consume - assume it only has one partition
+	for i := 0; i < count; i++ {
+		select {
+		case message, ok := <-consumer.Messages():
+			if ok {
+				var notice model.Notification
+				err := json.Unmarshal(message.Value, &notice)
+				if err != nil {
+					break
+				}
+				noticeArr = append(noticeArr, notice)
+				consumer.MarkOffset(message, "") // mark message as processed
+			}
+		case <-signals:
+			diff := count - len(noticeArr)
+			return noticeArr, errors.New(string(diff))
+		}
 	}
 
 	diff := count - len(noticeArr)
@@ -155,24 +175,40 @@ func (dao DefaultQueueDAO) EnqueueEvents(topic string, events []model.Event) ([]
 // DequeueEvents - dequeue events
 func (dao DefaultQueueDAO) DequeueEvents(topic string, count int) ([]model.Event, error) {
 	var eventArr []model.Event
-	partitionList, err := dao.consumer.Partitions(topic)
+	consumer, err := cluster.NewConsumer(dao.brokerList, topic+"-group", []string{topic}, dao.config)
 	if err != nil {
 		return eventArr, err
 	}
+	defer consumer.Close()
 
-	partitionConsumer, err := dao.consumer.ConsumePartition(topic, partitionList[0], sarama.OffsetNewest)
-	if err != nil {
-		return eventArr, err
-	}
+	// trap SIGINT to trigger a shutdown.
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt)
 
-	for i := 0; i < count; i++ {
-		message := <-partitionConsumer.Messages()
-		var event model.Event
-		err := json.Unmarshal(message.Value, &event)
-		if err != nil {
-			break
+	// consume errors
+	go func() {
+		for err := range consumer.Errors() {
+			log.Printf("Error: %s\n", err.Error())
 		}
-		eventArr = append(eventArr, event)
+	}()
+
+	// consume - assume it only has one partition
+	for i := 0; i < count; i++ {
+		select {
+		case message, ok := <-consumer.Messages():
+			if ok {
+				var event model.Event
+				err := json.Unmarshal(message.Value, &event)
+				if err != nil {
+					break
+				}
+				eventArr = append(eventArr, event)
+				consumer.MarkOffset(message, "") // mark message as processed
+			}
+		case <-signals:
+			diff := count - len(eventArr)
+			return eventArr, errors.New(string(diff))
+		}
 	}
 
 	diff := count - len(eventArr)
@@ -181,7 +217,6 @@ func (dao DefaultQueueDAO) DequeueEvents(topic string, count int) ([]model.Event
 
 // Close - avoid memory leak
 func (dao DefaultQueueDAO) Close() {
-	dao.consumer.Close()
 	dao.producer.Close()
 }
 
